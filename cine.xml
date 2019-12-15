@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language
+    name=        "Cine"
+    section=     "Sources"
+    extensions=  "*.cine"
+    version=     "0.1"
+    kateversion= "5.0">
+
+    <highlighting>
+        <list name="ControlFlow">
+            <item>break</item>
+            <item>case</item>
+            <item>continue</item>
+            <item>default</item>
+            <item>else</item>
+            <item>fallthrough</item>
+            <item>for</item>
+            <item>if</item>
+            <item>mif</item>
+            <item>of</item>
+            <item>parse</item>
+            <item>return</item>
+            <item>select</item>
+            <item>then</item>
+        </list>
+
+        <list name="Preprocessor">
+            <item>enslave</item>
+            <item>flag</item>
+        </list>
+
+        <list name="BuiltInKeywords">
+            <item>builtInClone</item>
+            <item>builtInFree</item>
+            <item>builtInTypeNumber</item>
+            <item>builtInUse</item>
+            <item>builtIn_currentFile</item>
+            <item>builtIn_currentLine</item>
+            <item>builtIn_currentRow</item>
+            <item>builtIn_random</item>
+            <item>result</item>
+        </list>
+
+        <contexts>
+            <context name="Main" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="^(func|proc)\b" attribute="MainID" context="Func"/>
+                <RegExpr String="^enums\b" attribute="MainID" context="Enums"/>
+                <RegExpr String="^group\b" attribute="MainID" context="Group"/>
+                <RegExpr String="^rules\b" attribute="MainID" context="GlobalRules"/>
+                <RegExpr String="^type\b" attribute="MainID" context="Type"/>
+                <RegExpr String="^flags\b" attribute="MainID" context="Flags"/>
+            </context>
+
+            <context name="EndLineComment" attribute="Comment" lineEndContext="#pop"/>
+
+            <context  name="InlineComment" attribute="Comment" lineEndContext="#pop">
+                <Detect2Chars char="*" char1="/" attribute="Comment" context="#pop" endRegion="Comment"/>
+            </context>
+
+            <context name="Enums" attribute="Normal" lineEndContext="Enum">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="Enum" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="^ {0,3}[^ ]" context="#pop#pop" lookAhead="true"/>
+            </context>
+
+            <context name="Group" attribute="Normal" lineEndContext="#pop">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
+            </context>
+
+            <context name="GlobalRules" attribute="Normal" lineEndContext="GlobalRule">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="GlobalRule" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <Int attribute="Int"/>
+                <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
+                <RegExpr String="\B@[a-zA-Z0-9_]*" attribute="Function"/>
+                <RegExpr String="^ {4}join\b" attribute="Preprocessor"/>
+                <RegExpr String="^ {0,3}[^ ]" context="#pop#pop" lookAhead="true"/>
+            </context>
+
+            <context name="Type" attribute="Normal" lineEndContext="TypeMember">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <DetectChar char="&quot;" attribute="String" context="String"/>
+                <WordDetect String="link" attribute="Preprocessor"/>
+                <WordDetect String="C" attribute="InlineC"/>
+                <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
+            </context>
+
+            <context name="TypeMember" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="^ {0,3}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
+            </context>
+
+            <context name="Flags" attribute="Normal" lineEndContext="Flag">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="Flag" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="^ {0,3}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <DetectChar char="&quot;" attribute="String" context="String"/>
+            </context>
+
+            <context name="String" attribute="String" lineEndContext="#pop">
+                <HlCStringChar attribute="String Char"/>
+                <DetectChar char="&quot;" attribute="String" context="#pop"/>
+            </context>
+
+            <context name="Func" attribute="Normal" lineEndContext="Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String=":\b" attribute="Access"/>
+                <RegExpr String="\B#[1-9]" attribute="Preprocessor"/>
+            </context>
+
+            <context name="Code" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="^ {0,3}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <RegExpr String="^ {4}include\b" attribute="MainID" context="Include"/>
+                <RegExpr String="^ {4}rules\b" attribute="MainID" context="FuncRules"/>
+                <RegExpr String="^ {80}C\b" attribute="InlineC" context="C80"/>
+                <RegExpr String="^ {76}C\b" attribute="InlineC" context="C76"/>
+                <RegExpr String="^ {72}C\b" attribute="InlineC" context="C72"/>
+                <RegExpr String="^ {68}C\b" attribute="InlineC" context="C68"/>
+                <RegExpr String="^ {64}C\b" attribute="InlineC" context="C64"/>
+                <RegExpr String="^ {60}C\b" attribute="InlineC" context="C60"/>
+                <RegExpr String="^ {56}C\b" attribute="InlineC" context="C56"/>
+                <RegExpr String="^ {52}C\b" attribute="InlineC" context="C52"/>
+                <RegExpr String="^ {48}C\b" attribute="InlineC" context="C48"/>
+                <RegExpr String="^ {44}C\b" attribute="InlineC" context="C44"/>
+                <RegExpr String="^ {40}C\b" attribute="InlineC" context="C40"/>
+                <RegExpr String="^ {36}C\b" attribute="InlineC" context="C36"/>
+                <RegExpr String="^ {32}C\b" attribute="InlineC" context="C32"/>
+                <RegExpr String="^ {28}C\b" attribute="InlineC" context="C28"/>
+                <RegExpr String="^ {24}C\b" attribute="InlineC" context="C24"/>
+                <RegExpr String="^ {20}C\b" attribute="InlineC" context="C20"/>
+                <RegExpr String="^ {16}C\b" attribute="InlineC" context="C16"/>
+                <RegExpr String="^ {12}C\b" attribute="InlineC" context="C12"/>
+                <RegExpr String="^ {8}C\b" attribute="InlineC" context="C8"/>
+                <RegExpr String="^ {4}C\b" attribute="InlineC" context="C4"/>
+                <DetectChar char="&quot;" attribute="String" context="String"/>
+                <HlCChar attribute="Char"/>
+                <Float attribute="Float"/>
+                <Int attribute="Int"/>
+                <RegExpr String="\B@[a-zA-Z0-9_]*" attribute="Function"/>
+                <RegExpr String="\bis\ set\?" attribute="Preprocessor"/>
+                <RegExpr String="haveLink\?" attribute="Preprocessor"/>
+                <keyword String="Preprocessor" attribute="Preprocessor"/>
+                <keyword String="ControlFlow" attribute="Control"/>
+                <keyword String="BuiltInKeywords" attribute="BuiltIn"/>
+                <WordDetect String="false" attribute="Int"/>
+                <WordDetect String="true" attribute="Int"/>
+                <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
+            </context>
+
+            <context name="Include" attribute="Normal" lineEndContext="CLibs">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="CLibs" attribute="Normal">
+                <RegExpr String="^ {0,7}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="FuncRules" attribute="Normal" lineEndContext="FuncRule">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="FuncRule" attribute="Normal">
+                <RegExpr String="^ {0,7}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <Int attribute="Int"/>
+                <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
+                <RegExpr String="\B@[a-zA-Z0-9_]*" attribute="Function"/>
+                <RegExpr String="^ {8}result\b" attribute="BuiltIn"/>
+                <RegExpr String="^ {8}final\b" attribute="Int"/>
+            </context>
+
+            <context name="C80" attribute="Normal" lineEndContext="C80Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C80Code" attribute="Normal">
+                <RegExpr String="^ {0,83}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C76" attribute="Normal" lineEndContext="C76Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C76Code" attribute="Normal">
+                <RegExpr String="^ {0,79}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C72" attribute="Normal" lineEndContext="C72Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C72Code" attribute="Normal">
+                <RegExpr String="^ {0,75}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C68" attribute="Normal" lineEndContext="C68Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C68Code" attribute="Normal">
+                <RegExpr String="^ {0,71}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C64" attribute="Normal" lineEndContext="C64Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C64Code" attribute="Normal">
+                <RegExpr String="^ {0,67}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C60" attribute="Normal" lineEndContext="C60Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C60Code" attribute="Normal">
+                <RegExpr String="^ {0,63}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C56" attribute="Normal" lineEndContext="C56Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C56Code" attribute="Normal">
+                <RegExpr String="^ {0,59}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C52" attribute="Normal" lineEndContext="C52Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C52Code" attribute="Normal">
+                <RegExpr String="^ {0,55}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C48" attribute="Normal" lineEndContext="C48Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C48Code" attribute="Normal">
+                <RegExpr String="^ {0,51}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C44" attribute="Normal" lineEndContext="C44Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C44Code" attribute="Normal">
+                <RegExpr String="^ {0,47}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C40" attribute="Normal" lineEndContext="C40Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C40Code" attribute="Normal">
+                <RegExpr String="^ {0,43}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C36" attribute="Normal" lineEndContext="C36Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C36Code" attribute="Normal">
+                <RegExpr String="^ {0,39}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C32" attribute="Normal" lineEndContext="C32Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C32Code" attribute="Normal">
+                <RegExpr String="^ {0,35}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C28" attribute="Normal" lineEndContext="C28Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C28Code" attribute="Normal">
+                <RegExpr String="^ {0,31}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C24" attribute="Normal" lineEndContext="C24Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C24Code" attribute="Normal">
+                <RegExpr String="^ {0,27}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C20" attribute="Normal" lineEndContext="C20Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C20Code" attribute="Normal">
+                <RegExpr String="^ {0,23}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C16" attribute="Normal" lineEndContext="C16Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C16Code" attribute="Normal">
+                <RegExpr String="^ {0,19}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C12" attribute="Normal" lineEndContext="C12Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C12Code" attribute="Normal">
+                <RegExpr String="^ {0,15}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C8" attribute="Normal" lineEndContext="C8Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C8Code" attribute="Normal">
+                <RegExpr String="^ {0,11}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+
+            <context name="C4" attribute="Normal" lineEndContext="C4Code">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="C4Code" attribute="Normal">
+                <RegExpr String="^ {0,7}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <IncludeRules context="Normal##C"/>
+            </context>
+        </contexts>
+        <itemDatas>
+            <itemData name="Access"       defStyleNum="dsAttribute"    spellChecking="false"/>
+            <itemData name="BuiltIn"      defStyleNum="dsBuiltIn"      spellChecking="false"/>
+            <itemData name="Char"         defStyleNum="dsChar"         spellChecking="false"/>
+            <itemData name="Comment"      defStyleNum="dsComment"      spellChecking="true" />
+            <itemData name="Control"      defStyleNum="dsControlFlow"  spellChecking="false"/>
+            <itemData name="Float"        defStyleNum="dsFloat"        spellChecking="false"/>
+            <itemData name="Function"     defStyleNum="dsFunction"     spellChecking="false"/>
+            <itemData name="InlineC"      defStyleNum="dsBuiltIn"      spellChecking="false"/>
+            <itemData name="Int"          defStyleNum="dsDecVal"       spellChecking="false"/>
+            <itemData name="MainID"       defStyleNum="dsKeyword"      spellChecking="false"/>
+            <itemData name="Normal"       defStyleNum="dsNormal"       spellChecking="false"/>
+            <itemData name="Preprocessor" defStyleNum="dsPreprocessor" spellChecking="false"/>
+            <itemData name="String Char"  defStyleNum="dsSpecialChar"  spellChecking="false"/>
+            <itemData name="String"       defStyleNum="dsString"       spellChecking="false"/>
+            <itemData name="TypeName"     defStyleNum="dsDataType"     spellChecking="false"/>
+        </itemDatas>
+    </highlighting>
+    <general>
+        <folding indentationsensitive="1"/>
+        <comments>
+            <comment name="singleLine" start="//"/>
+        </comments>
+    </general>
+</language>
