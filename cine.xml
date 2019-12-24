@@ -189,6 +189,8 @@
             </context>
 
             <context name="FuncRule" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
                 <RegExpr String="^ {0,7}[^ ]" context="#pop#pop" lookAhead="true"/>
                 <Int attribute="Int"/>
                 <RegExpr String="\b[A-Z][a-zA-Z0-9_]*" attribute="TypeName"/>
