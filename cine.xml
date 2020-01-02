@@ -35,11 +35,20 @@
             <item>builtInFree</item>
             <item>builtInTypeNumber</item>
             <item>builtInUse</item>
+            <item>builtInCallFunctionByID</item>
+            <item>builtInGetFunctionByID</item>
             <item>builtIn_currentFile</item>
             <item>builtIn_currentLine</item>
             <item>builtIn_currentRow</item>
             <item>builtIn_random</item>
             <item>result</item>
+        </list>
+
+        <list name="FunctionAttributes">
+            <item>deprecated</item>
+            <item>id</item>
+            <item>alwaysInline</item>
+            <item>noInline</item>
         </list>
 
         <contexts>
@@ -138,6 +147,7 @@
                 <RegExpr String="^ {0,3}[^ ]" context="#pop#pop" lookAhead="true"/>
                 <RegExpr String="^ {4}include\b" attribute="MainID" context="Include"/>
                 <RegExpr String="^ {4}rules\b" attribute="MainID" context="FuncRules"/>
+                <RegExpr String="^ {4}attributes\b" attribute="MainID" context="FuncAttributes"/>
                 <RegExpr String="^ {80}C\b" attribute="InlineC" context="C80"/>
                 <RegExpr String="^ {76}C\b" attribute="InlineC" context="C76"/>
                 <RegExpr String="^ {72}C\b" attribute="InlineC" context="C72"/>
@@ -197,6 +207,19 @@
                 <RegExpr String="\B@[a-zA-Z0-9_]*" attribute="Function"/>
                 <RegExpr String="^ {8}result\b" attribute="BuiltIn"/>
                 <RegExpr String="^ {8}final\b" attribute="Int"/>
+            </context>
+
+            <context name="FuncAttributes" attribute="Normal" lineEndContext="FuncAttribute">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+            </context>
+
+            <context name="FuncAttribute" attribute="Normal">
+                <Detect2Chars char="/" char1="/" attribute="Comment" context="EndLineComment"/>
+                <Detect2Chars char="/" char1="*" attribute="Comment" context="InlineComment" beginRegion="Comment"/>
+                <RegExpr String="^ {0,7}[^ ]" context="#pop#pop" lookAhead="true"/>
+                <DetectChar char="&quot;" attribute="String" context="String"/>
+                <keyword String="FunctionAttributes" attribute="FunctionAttributes"/>
             </context>
 
             <context name="C80" attribute="Normal" lineEndContext="C80Code">
@@ -400,21 +423,22 @@
             </context>
         </contexts>
         <itemDatas>
-            <itemData name="Access"       defStyleNum="dsAttribute"    spellChecking="false"/>
-            <itemData name="BuiltIn"      defStyleNum="dsBuiltIn"      spellChecking="false"/>
-            <itemData name="Char"         defStyleNum="dsChar"         spellChecking="false"/>
-            <itemData name="Comment"      defStyleNum="dsComment"      spellChecking="true" />
-            <itemData name="Control"      defStyleNum="dsControlFlow"  spellChecking="false"/>
-            <itemData name="Float"        defStyleNum="dsFloat"        spellChecking="false"/>
-            <itemData name="Function"     defStyleNum="dsFunction"     spellChecking="false"/>
-            <itemData name="InlineC"      defStyleNum="dsBuiltIn"      spellChecking="false"/>
-            <itemData name="Int"          defStyleNum="dsDecVal"       spellChecking="false"/>
-            <itemData name="MainID"       defStyleNum="dsKeyword"      spellChecking="false"/>
-            <itemData name="Normal"       defStyleNum="dsNormal"       spellChecking="false"/>
-            <itemData name="Preprocessor" defStyleNum="dsPreprocessor" spellChecking="false"/>
-            <itemData name="String Char"  defStyleNum="dsSpecialChar"  spellChecking="false"/>
-            <itemData name="String"       defStyleNum="dsString"       spellChecking="false"/>
-            <itemData name="TypeName"     defStyleNum="dsDataType"     spellChecking="false"/>
+            <itemData name="Access"             defStyleNum="dsAttribute"    spellChecking="false"/>
+            <itemData name="BuiltIn"            defStyleNum="dsBuiltIn"      spellChecking="false"/>
+            <itemData name="Char"               defStyleNum="dsChar"         spellChecking="false"/>
+            <itemData name="Comment"            defStyleNum="dsComment"      spellChecking="true" />
+            <itemData name="Control"            defStyleNum="dsControlFlow"  spellChecking="false"/>
+            <itemData name="Float"              defStyleNum="dsFloat"        spellChecking="false"/>
+            <itemData name="Function"           defStyleNum="dsFunction"     spellChecking="false"/>
+            <itemData name="FunctionAttributes" defStyleNum="dsAttribute"    spellChecking="false"/>
+            <itemData name="InlineC"            defStyleNum="dsBuiltIn"      spellChecking="false"/>
+            <itemData name="Int"                defStyleNum="dsDecVal"       spellChecking="false"/>
+            <itemData name="MainID"             defStyleNum="dsKeyword"      spellChecking="false"/>
+            <itemData name="Normal"             defStyleNum="dsNormal"       spellChecking="false"/>
+            <itemData name="Preprocessor"       defStyleNum="dsPreprocessor" spellChecking="false"/>
+            <itemData name="String Char"        defStyleNum="dsSpecialChar"  spellChecking="false"/>
+            <itemData name="String"             defStyleNum="dsString"       spellChecking="false"/>
+            <itemData name="TypeName"           defStyleNum="dsDataType"     spellChecking="false"/>
         </itemDatas>
     </highlighting>
     <general>
