@@ -176,7 +176,7 @@
                 <Float attribute="Float"/>
                 <Int attribute="Int"/>
                 <RegExpr String="\B@[a-zA-Z0-9_]*" attribute="Function"/>
-                <RegExpr String="\bis\ set\?" attribute="Preprocessor"/>
+                <RegExpr String="\bis\b" attribute="Preprocessor"/>
                 <RegExpr String="haveLink\?" attribute="Preprocessor"/>
                 <keyword String="Preprocessor" attribute="Preprocessor"/>
                 <keyword String="ControlFlow" attribute="Control"/>
