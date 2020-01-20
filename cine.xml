@@ -49,6 +49,7 @@
             <item>id</item>
             <item>alwaysInline</item>
             <item>noInline</item>
+            <item>singleRun</item>
         </list>
 
         <contexts>
